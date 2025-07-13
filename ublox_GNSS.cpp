@@ -13,7 +13,7 @@ Distributed as-is; no warranty is given.
 
 void GNSS::clearUART(void)
 {
-  while (stream.available() > 0)
+  while (stream.available() > 00)
     stream.read();
 }
 
