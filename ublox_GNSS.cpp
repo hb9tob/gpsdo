@@ -13,7 +13,7 @@ Distributed as-is; no warranty is given.
 
 void GNSS::clearUART(void)
 {
-  while (stream.available() > 00)
+  while (stream.available() > 0)
     stream.read();
 }
 
@@ -29,8 +29,7 @@ bool GNSS::init(psmMode_t m)
 {
   DBG("\nStart GNSS Configuration");
 
-  stream.write(0xFF); // Send something to wake GNSS
-  delay(600);
+  //factoryRST();
 
   // Disable NMEA, UBX-CFG-PRT -> Enable UBX over UART1 and Baud rate 9600
   byte message[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00,
@@ -145,7 +144,7 @@ bool GNSS::recieveUBX(byte *res, uint32_t size, byte *header)
     while (stream.available() > 0)
     {
       data = stream.read();
-
+      //Serial.print(data,HEX);
       if (i < 4)
       {
         if (data == header[i])
@@ -165,6 +164,8 @@ bool GNSS::recieveUBX(byte *res, uint32_t size, byte *header)
       }
     }
   } while ((millis() - millis_read < UART_TIMEOUT) && i < size);
+  //Serial.println();
+  //Serial.println(i);
 }
 
 bool GNSS::sendUBX(byte *msg, uint32_t size)
@@ -252,7 +253,7 @@ bool GNSS::getCoodinates(float &lon, float &lat, fixType_t &fix, float &acc, flo
   }
 
   int i = 0;
-  uint8_t res[100];
+  uint8_t res[92];
   uint32_t startMillis = millis();
 
   // Reset accuracy for while loop;
@@ -321,7 +322,7 @@ void GNSS::off(void)
 void GNSS::factoryRST(void)
 {
   // first send dumb data to make sure its on
-  stream.write(0xFF);
+ 
 
   byte message[] = {0xB5, 0x62, 0x06, 0x09, 0x0D, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
                     0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x07, 0x1F, 0x9E};
